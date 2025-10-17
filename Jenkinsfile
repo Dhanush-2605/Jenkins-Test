@@ -22,7 +22,7 @@ pipeline {
         stage('Install Dependencies') {
             steps {
                 sh '''
-                    source venv/bin/activate
+                    . venv/bin/activate
                     if [ -f requirements.txt ]; then
                         pip install -r requirements.txt
                     else
