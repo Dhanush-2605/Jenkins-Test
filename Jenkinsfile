@@ -22,7 +22,7 @@ pipeline {
 
         stage('Run Tests') {
             steps {
-                echo '🧪 Running Pytest...'
+                echo '🧪 Running Pytest now...'
                 sh '''
                     source venv/bin/activate
                     pytest --html=report.html --self-contained-html
