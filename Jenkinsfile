@@ -13,8 +13,6 @@ pipeline {
             steps {
                 echo '📥 Installing dependencies now...'
                 sh '''
-                    python3 -m venv venv
-                    source venv/bin/activate
                     pip install -r requirements.txt
                 '''
             }
@@ -24,7 +22,6 @@ pipeline {
             steps {
                 echo '🧪 Running Pytest now...'
                 sh '''
-                    source venv/bin/activate
                     pytest --html=report.html --self-contained-html
                 '''
             }
