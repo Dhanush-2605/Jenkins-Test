@@ -35,9 +35,11 @@ pipeline {
         stage('Run Tests') {
             steps {
                 sh '''
+                            #!/bin/bash
+
                     . venv/bin/activate
                     pip install pytest
-                    pytest test/ --maxfail=1 --disable-warnings -v
+                    PYTHONPATH=. pytest test/ --maxfail=1 --disable-warnings -v
                 '''
             }
         }
