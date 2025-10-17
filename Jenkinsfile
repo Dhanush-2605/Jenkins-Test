@@ -11,10 +11,11 @@ pipeline {
         stage('Set up Python Virtual Env') {
             steps {
                 sh '''
-                    python3 -m venv venv
-                    source venv/bin/activate
-                    pip install --upgrade pip
-                '''
+                python3 -m venv venv
+                . venv/bin/activate
+                pip install --upgrade pip
+            '''
+
             }
         }
 
@@ -34,7 +35,7 @@ pipeline {
         stage('Run Tests') {
             steps {
                 sh '''
-                    source venv/bin/activate
+                    . venv/bin/activate
                     pip install pytest
                     pytest test/ --maxfail=1 --disable-warnings -v
                 '''
