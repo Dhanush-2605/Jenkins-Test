@@ -1,68 +1,54 @@
-
-
-
 pipeline {
     agent any
 
-    environment {
-        PYTHON = '/usr/bin/python3'
-    }
-
     stages {
-
         stage('Checkout Code') {
             steps {
-                echo "📦 Checking out code from GitHub..."
+                // Checkout from your GitHub repo and master branch
                 git branch: 'master', url: 'https://github.com/Dhanush-2605/Jenkins-Test.git'
             }
         }
 
-        stage('Setup Environment') {
+        stage('Set up Python') {
             steps {
-                echo "⚙️ Setting up virtual environment..."
                 sh '''
-                    sudo apt update
-                    sudo apt install -y python3-venv python3-pip
-                    ${PYTHON} -m venv venv
+                    python3 --version
+                    pip3 --version
                 '''
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                echo "📥 Installing dependencies..."
-                sh '''
-                    . venv/bin/activate
-                    python -m pip install --upgrade pip
-                    pip install -r requirements.txt
-                '''
+                script {
+                    if (fileExists('requirements.txt')) {
+                        sh 'pip3 install -r requirements.txt'
+                    } else {
+                        echo "No requirements.txt found, skipping install."
+                    }
+                }
             }
         }
 
         stage('Run Tests') {
             steps {
-                echo "🧪 Running tests using pytest..."
                 sh '''
-                    . venv/bin/activate
-                    pytest --maxfail=1 --disable-warnings -q --html=report.html
+                    pip3 install pytest
+                    pytest test/ --maxfail=1 --disable-warnings -v
                 '''
-            }
-        }
-
-        stage('Archive Test Report') {
-            steps {
-                echo "📊 Archiving pytest report..."
-                archiveArtifacts artifacts: 'report.html', fingerprint: true
             }
         }
     }
 
     post {
+        always {
+            echo 'Pipeline execution completed.'
+        }
         success {
-            echo "✅ Build & tests successful!"
+            echo '✅ All tests passed successfully!'
         }
         failure {
-            echo "❌ Some tests failed. Check report.html in Jenkins artifacts."
+            echo '❌ Tests failed. Check logs for details.'
         }
     }
 }
