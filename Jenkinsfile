@@ -4,36 +4,38 @@ pipeline {
     stages {
         stage('Checkout Code') {
             steps {
-                // Checkout from your GitHub repo and master branch
                 git branch: 'master', url: 'https://github.com/Dhanush-2605/Jenkins-Test.git'
             }
         }
 
-        stage('Set up Python') {
+        stage('Set up Python Virtual Env') {
             steps {
                 sh '''
-                    python3 --version
-                    pip3 --version
+                    python3 -m venv venv
+                    source venv/bin/activate
+                    pip install --upgrade pip
                 '''
             }
         }
 
         stage('Install Dependencies') {
             steps {
-                script {
-                    if (fileExists('requirements.txt')) {
-                        sh 'pip3 install -r requirements.txt'
-                    } else {
+                sh '''
+                    source venv/bin/activate
+                    if [ -f requirements.txt ]; then
+                        pip install -r requirements.txt
+                    else
                         echo "No requirements.txt found, skipping install."
-                    }
-                }
+                    fi
+                '''
             }
         }
 
         stage('Run Tests') {
             steps {
                 sh '''
-                    pip3 install pytest
+                    source venv/bin/activate
+                    pip install pytest
                     pytest test/ --maxfail=1 --disable-warnings -v
                 '''
             }
